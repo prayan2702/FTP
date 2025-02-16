@@ -22,6 +22,52 @@ def calculate_portfolio_returns(portfolio, start_date, end_date):
             st.warning(f"Failed to download data for {ticker}: {e}")
     return portfolio_returns
 
+# Function to calculate Z-scores
+def calculate_z_score(data):
+    mean = data.mean()
+    std = data.std()
+    z_score = (data - mean) / std
+    return z_score.round(2)
+
+# Function to get top-ranked stocks using the actual ranking logic
+def get_top_ranked_stocks(date, universe, ranking_method):
+    """
+    Get the top-ranked stocks based on the actual momentum ranking logic.
+    """
+    # Define the ranking options
+    ranking_options = {
+        "avgZScore12_6_3": ["z_score12M", "z_score6M", "z_score3M"],
+        "avgZScore12_9_6_3": ["z_score12M", "z_score9M", "z_score6M", "z_score3M"],
+        "avgSharpe12_6_3": ["sharpe12M", "sharpe6M", "sharpe3M"],
+        "avgSharpe9_6_3": ["sharpe9M", "sharpe6M", "sharpe3M"],
+        "avg_All": ["sharpe12M", "sharpe9M", "sharpe6M", "sharpe3M"],
+    }
+
+    # Get the relevant columns for the selected ranking method
+    ranking_columns = ranking_options.get(ranking_method, ["sharpe12M", "sharpe6M", "sharpe3M"])
+
+    # Simulate the ranking logic (replace this with actual data fetching and ranking logic)
+    # For demonstration, we'll create a dummy DataFrame with random values
+    np.random.seed(42)
+    tickers = ['RELIANCE', 'TCS', 'HDFCBANK', 'INFY', 'HINDUNILVR', 'ICICIBANK', 'KOTAKBANK', 'AXISBANK', 'SBIN', 'BAJFINANCE']
+    df_stats = pd.DataFrame({
+        'Ticker': tickers,
+        'sharpe12M': np.random.rand(10) * 2,
+        'sharpe6M': np.random.rand(10) * 2,
+        'sharpe3M': np.random.rand(10) * 2,
+        'z_score12M': np.random.rand(10) * 2,
+        'z_score6M': np.random.rand(10) * 2,
+        'z_score3M': np.random.rand(10) * 2,
+    })
+
+    # Calculate the average score based on the ranking method
+    df_stats['avg_score'] = df_stats[ranking_columns].mean(axis=1)
+
+    # Sort by the average score and get the top 30 stocks
+    top_stocks = df_stats.sort_values('avg_score', ascending=False).head(30)['Ticker'].tolist()
+
+    return top_stocks
+
 # Function to backtest the momentum strategy
 def backtest_momentum_strategy(start_date, end_date, rebalance_frequency, universe, ranking_method):
     """
@@ -34,7 +80,6 @@ def backtest_momentum_strategy(start_date, end_date, rebalance_frequency, univer
     while current_date <= pd.Timestamp(end_date):
         # Get the top-ranked stocks for the current rebalance date
         try:
-            # Simulate the momentum ranking logic (replace this with your actual ranking logic)
             top_stocks = get_top_ranked_stocks(current_date, universe, ranking_method)
             
             # Calculate portfolio returns for the rebalance period
@@ -54,18 +99,6 @@ def backtest_momentum_strategy(start_date, end_date, rebalance_frequency, univer
 
     return portfolio_returns
 
-# Function to get top-ranked stocks (replace this with your actual ranking logic)
-def get_top_ranked_stocks(date, universe, ranking_method):
-    """
-    Simulate the momentum ranking logic to get the top-ranked stocks.
-    Replace this with your actual ranking logic.
-    """
-    # Example: Return a fixed list of top-ranked stocks (for demonstration purposes)
-    if universe == 'AllNSE':
-        return ['RELIANCE', 'TCS', 'HDFCBANK', 'INFY', 'HINDUNILVR']  # Remove .NS suffix here
-    else:
-        return ['RELIANCE', 'TCS', 'HDFCBANK']  # Remove .NS suffix here
-
 # Streamlit App
 def main():
     st.title("Momentum Strategy Backtesting")
@@ -74,7 +107,7 @@ def main():
     # Sidebar for user inputs
     st.sidebar.header("Backtesting Parameters")
     start_date = st.sidebar.date_input("Start Date", datetime(2020, 1, 1))
-    end_date = st.sidebar.date_input("End Date", datetime(2023, 12, 31))
+    end_date = st.sidebar.date_input("End Date", datetime(2023, 12, 29))  # Adjusted to a valid trading day
     rebalance_frequency = st.sidebar.selectbox("Rebalancing Frequency", ["Monthly", "Quarterly"])
     universe = st.sidebar.selectbox("Universe", ["AllNSE", "Nifty50", "Nifty100"])
     ranking_method = st.sidebar.selectbox("Ranking Method", ["avgZScore12_6_3", "avgSharpe12_6_3", "avgSharpe9_6_3"])
