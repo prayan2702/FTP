@@ -27,9 +27,9 @@ def backtest_momentum_strategy(start_date, end_date, rebalance_frequency, univer
     """
     # Initialize variables
     portfolio_returns = pd.Series(dtype=float)
-    current_date = start_date
+    current_date = pd.Timestamp(start_date)
 
-    while current_date <= end_date:
+    while current_date <= pd.Timestamp(end_date):
         # Get the top-ranked stocks for the current rebalance date
         try:
             # Simulate the momentum ranking logic (replace this with your actual ranking logic)
@@ -37,8 +37,8 @@ def backtest_momentum_strategy(start_date, end_date, rebalance_frequency, univer
             
             # Calculate portfolio returns for the rebalance period
             next_rebalance_date = current_date + pd.DateOffset(months=1) if rebalance_frequency == 'Monthly' else current_date + pd.DateOffset(months=3)
-            if next_rebalance_date > end_date:
-                next_rebalance_date = end_date
+            if next_rebalance_date > pd.Timestamp(end_date):
+                next_rebalance_date = pd.Timestamp(end_date)
             
             # Calculate returns for the current portfolio
             period_returns = calculate_portfolio_returns(top_stocks, current_date, next_rebalance_date)
@@ -80,6 +80,10 @@ def main():
     # Run backtest when the user clicks the button
     if st.sidebar.button("Run Backtest"):
         st.write(f"Running backtest from {start_date} to {end_date} with {rebalance_frequency} rebalancing...")
+
+        # Convert start_date and end_date to pandas.Timestamp
+        start_date = pd.Timestamp(start_date)
+        end_date = pd.Timestamp(end_date)
 
         # Backtest the momentum strategy
         strategy_returns = backtest_momentum_strategy(start_date, end_date, rebalance_frequency, universe, ranking_method)
