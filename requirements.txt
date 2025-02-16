@@ -1,4 +1,4 @@
 streamlit
-zipline-reloaded
 pandas
-pytz
+numpy
+yfinance
