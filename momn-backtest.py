@@ -15,7 +15,7 @@ def calculate_portfolio_returns(portfolio, start_date, end_date):
         try:
             # Ensure the ticker symbol has only one .NS suffix
             ticker_symbol = ticker if ticker.endswith('.NS') else ticker + '.NS'
-            stock_data = yf.download(ticker_symbol, start=start_date, end=end_date)['Adj Close']
+            stock_data = yf.download(ticker_symbol, start=start_date, end=end_date)['Close']
             stock_returns = stock_data.pct_change().fillna(0)
             portfolio_returns += stock_returns * (1 / len(portfolio))  # Equal-weighted portfolio
         except Exception as e:
