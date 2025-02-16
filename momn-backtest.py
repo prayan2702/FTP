@@ -13,7 +13,9 @@ def calculate_portfolio_returns(portfolio, start_date, end_date):
     portfolio_returns = pd.Series(index=pd.date_range(start=start_date, end=end_date), dtype=float)
     for ticker in portfolio:
         try:
-            stock_data = yf.download(ticker + ".NS", start=start_date, end=end_date)['Adj Close']
+            # Ensure the ticker symbol has only one .NS suffix
+            ticker_symbol = ticker if ticker.endswith('.NS') else ticker + '.NS'
+            stock_data = yf.download(ticker_symbol, start=start_date, end=end_date)['Adj Close']
             stock_returns = stock_data.pct_change().fillna(0)
             portfolio_returns += stock_returns * (1 / len(portfolio))  # Equal-weighted portfolio
         except Exception as e:
@@ -60,9 +62,9 @@ def get_top_ranked_stocks(date, universe, ranking_method):
     """
     # Example: Return a fixed list of top-ranked stocks (for demonstration purposes)
     if universe == 'AllNSE':
-        return ['RELIANCE.NS', 'TCS.NS', 'HDFCBANK.NS', 'INFY.NS', 'HINDUNILVR.NS']
+        return ['RELIANCE', 'TCS', 'HDFCBANK', 'INFY', 'HINDUNILVR']  # Remove .NS suffix here
     else:
-        return ['RELIANCE.NS', 'TCS.NS', 'HDFCBANK.NS']
+        return ['RELIANCE', 'TCS', 'HDFCBANK']  # Remove .NS suffix here
 
 # Streamlit App
 def main():
