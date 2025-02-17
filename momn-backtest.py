@@ -1,37 +1,40 @@
 import streamlit as st
 import os
 
-st.title("Upload from Mobile & Download on PC")
+st.title("📂 Mobile se Upload Karo, PC se Download Karo")
 
-# Cloud Storage Alternative
+# Shared Folder for Uploaded Files
 UPLOAD_FOLDER = "shared_files"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Upload Section
-uploaded_file = st.file_uploader("Upload a file", type=["png", "jpg", "pdf", "txt", "csv", "xlsx"])
+# Upload Section (Mobile ya PC se)
+uploaded_file = st.file_uploader("File Upload Karo", type=["png", "jpg", "pdf", "txt", "csv", "xlsx"])
 
 if uploaded_file is not None:
     file_path = os.path.join(UPLOAD_FOLDER, uploaded_file.name)
 
-    # Save file
+    # Save file in shared folder
     with open(file_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
 
-    st.session_state["last_uploaded_file"] = uploaded_file.name  # Save filename in session
+    st.success(f"✅ File `{uploaded_file.name}` successfully uploaded!")
+    st.experimental_rerun()  # Refresh app so that PC session can see new files
 
-    st.success(f"File `{uploaded_file.name}` uploaded successfully!")
-    st.write("You can now download this file from another device.")
+# Show List of Available Files for Download
+st.subheader("📥 Available Files for Download")
 
-# Download Section (Accessible from Any Device)
-if "last_uploaded_file" in st.session_state:
-    latest_file = os.path.join(UPLOAD_FOLDER, st.session_state["last_uploaded_file"])
+files = os.listdir(UPLOAD_FOLDER)
+if files:
+    for file in files:
+        file_path = os.path.join(UPLOAD_FOLDER, file)
+        with open(file_path, "rb") as f:
+            file_bytes = f.read()
 
-    with open(latest_file, "rb") as f:
-        file_bytes = f.read()
-
-    st.download_button(
-        label="Download Last Uploaded File",
-        data=file_bytes,
-        file_name=st.session_state["last_uploaded_file"],
-        mime="application/octet-stream"
-    )
+        st.download_button(
+            label=f"⬇️ Download {file}",
+            data=file_bytes,
+            file_name=file,
+            mime="application/octet-stream"
+        )
+else:
+    st.info("📁 No files uploaded yet. Upload a file to see it here.")
