@@ -19,7 +19,7 @@ if uploaded_file is not None:
         f.write(uploaded_file.getbuffer())
 
     st.success(f"✅ File `{uploaded_file.name}` successfully uploaded!")
-    st.experimental_rerun()  # Refresh app so that PC session can see new files
+    st.rerun()  # 🔄 New rerun method
 
 # Show List of Available Files for Download
 st.subheader("📥 Available Files for Download")
@@ -43,6 +43,6 @@ if files:
         shutil.rmtree(UPLOAD_FOLDER)  # Delete folder
         os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Recreate empty folder
         st.warning("🚮 All files have been deleted!")
-        st.experimental_rerun()  # Refresh app
+        st.rerun()  # 🔄 New rerun method
 else:
     st.info("📁 No files uploaded yet. Upload a file to see it here.")
