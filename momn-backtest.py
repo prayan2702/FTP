@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import shutil
 
-st.title("📂 Mobile se Upload Karo, PC se Download Karo")
+st.title("📂 File Transfer App")
 
 # Shared Folder for Uploaded Files
 UPLOAD_FOLDER = "shared_files"
