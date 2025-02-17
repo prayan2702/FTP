@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import shutil
 
 st.title("📂 Mobile se Upload Karo, PC se Download Karo")
 
@@ -36,5 +37,12 @@ if files:
             file_name=file,
             mime="application/octet-stream"
         )
+
+    # Add Delete Button
+    if st.button("🗑️ Delete All Files"):
+        shutil.rmtree(UPLOAD_FOLDER)  # Delete folder
+        os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Recreate empty folder
+        st.warning("🚮 All files have been deleted!")
+        st.experimental_rerun()  # Refresh app
 else:
     st.info("📁 No files uploaded yet. Upload a file to see it here.")
