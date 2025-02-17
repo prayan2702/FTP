@@ -1,31 +1,37 @@
 import streamlit as st
 import os
 
-st.title("Mobile se File Upload Karo, PC se Download Karo")
-# File Upload
+st.title("Upload from Mobile & Download on PC")
 
-uploaded_file = st.file_uploader("Yahan File Upload Karo", type=["png", "jpg", "pdf", "txt", "csv", "xlsx"])
+# Cloud Storage Alternative
+UPLOAD_FOLDER = "shared_files"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# Upload Section
+uploaded_file = st.file_uploader("Upload a file", type=["png", "jpg", "pdf", "txt", "csv", "xlsx"])
 
 if uploaded_file is not None:
+    file_path = os.path.join(UPLOAD_FOLDER, uploaded_file.name)
 
-    file_name = uploaded_file.name
-
-    file_path = os.path.join("shared_files", file_name)
-
-    # Ensure directory exists
-
-    os.makedirs("shared_files", exist_ok=True)
-
-    # Save file locally
-
+    # Save file
     with open(file_path, "wb") as f:
-
         f.write(uploaded_file.getbuffer())
 
-    # Create a public download link
+    st.session_state["last_uploaded_file"] = uploaded_file.name  # Save filename in session
 
-    download_link = f"https://your-streamlit-app-url/shared_files/{file_name}"
+    st.success(f"File `{uploaded_file.name}` uploaded successfully!")
+    st.write("You can now download this file from another device.")
 
-    st.success("File Uploaded Successfully!")
+# Download Section (Accessible from Any Device)
+if "last_uploaded_file" in st.session_state:
+    latest_file = os.path.join(UPLOAD_FOLDER, st.session_state["last_uploaded_file"])
 
-    st.markdown(f"**Download from PC using this link:** [Download {file_name}]({download_link})")
+    with open(latest_file, "rb") as f:
+        file_bytes = f.read()
+
+    st.download_button(
+        label="Download Last Uploaded File",
+        data=file_bytes,
+        file_name=st.session_state["last_uploaded_file"],
+        mime="application/octet-stream"
+    )
