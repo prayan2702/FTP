@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import shutil
 
-st.title("📂 File Transfer App")
+st.title("📂 My Drive")
 
 # Shared Folder for Uploaded Files
 UPLOAD_FOLDER = "shared_files"
