@@ -9,7 +9,7 @@ UPLOAD_FOLDER = "shared_files"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Upload Section (Mobile ya PC se)
-uploaded_file = st.file_uploader("File Upload Karo", type=["png", "jpg", "pdf", "txt", "csv", "xlsx"])
+uploaded_file = st.file_uploader("Upload File:", type=["png", "jpg", "pdf", "txt", "csv", "xlsx"])
 
 if uploaded_file is not None:
     file_path = os.path.join(UPLOAD_FOLDER, uploaded_file.name)
